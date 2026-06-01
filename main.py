@@ -30,7 +30,7 @@ for index, row in data.iterrows():
 
 # 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
         number = random.randint(1,3)
-        with open (f"letter_templates\letter_{number}.txt","r") as file:
+        with open (f"letter_templates/letter_{number}.txt","r") as file:
             name = file.read()
             if "[NAME]" in name:
                 new_name = name.replace("[NAME]", row["name"])
