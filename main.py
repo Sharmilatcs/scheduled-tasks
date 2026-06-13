@@ -12,8 +12,8 @@ account_sid = os.environ.get("ACCOUNT_SID")
 auth_token = os.environ.get("AUTH_TOKEN")
 
 parameters = {
-    "lat" : 27.664827,
-    "lon": -81.515755,
+    "lat" : YOUR_LATITUDE,  # 27.664827,
+    "lon": YOUR_LONGITUDE, # -81.515755,
     "cnt": "4",
     "appid": api_key
 
