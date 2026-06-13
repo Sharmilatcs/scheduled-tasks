@@ -1,51 +1,45 @@
-# To run and test the code you need to update 4 places:
-# 1. Change MY_EMAIL/MY_PASSWORD to your own details.
-# 2. Go to your email provider and make it allow less secure apps.
-# 3. Update the SMTP ADDRESS to match your email provider.
-# 4. Update birthdays.csv to contain today's month and day.
-# See the solution video in the 100 Days of Python Course for explainations.
-
-
-##################### Extra Hard Starting Project ######################
+from multiprocessing.connection import Client
+from twilio.rest import Client
 import os
-import pandas
-import datetime as dt
-import random
-import smtplib
 
-my_email = os.environ.get("MY_EMAIL")
-my_password = os.environ.get("MY_PASSWORD")
+import requests
 
-# 1. Update the birthdays.csv
-data = pandas.read_csv("birthdays.csv")
+# with open(file="api_key.txt", mode="r") as file:
+#     api_key = file.read().strip()
 
-# 2. Check if today matches a birthday in the birthdays.csv
-now = dt.datetime.now()
-current_month = now.month
-current_day = now.day
+api_key = os.environ.get("OWM_API_KEY")
+account_sid = os.environ.get("ACCOUNT_SID")
+auth_token = os.environ.get("AUTH_TOKEN")
 
-for index, row in data.iterrows():
-    if row["month"] == current_month and row["day"] == current_day:
+parameters = {
+    "lat" : 27.664827,
+    "lon": -81.515755,
+    "cnt": "4",
+    "appid": api_key
 
+}
+response = requests.get(url="https://api.openweathermap.org/data/2.5/forecast", params=parameters)
+response.raise_for_status()
+data=response.json()
+item = 0
+will_rain = False
+for item in range(len(data["list"])):
+     code = data["list"][item]["weather"][0]["id"]
+     if code < 700:
+        will_rain = True
 
-# 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
-        number = random.randint(1,3)
-        with open (f"letter_templates/letter_{number}.txt","r") as file:
-            name = file.read()
-            if "[NAME]" in name:
-                new_name = name.replace("[NAME]", row["name"])
+if will_rain:
 
-# 4. Send the letter generated in step 3 to that person's email address.
-                with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-                    connection.starttls()
-
-                    connection.login(my_email, my_password)
-
-                    connection.sendmail(
-                        from_addr=my_email,
-                        to_addrs="mala.ram83@yahoo.com",
-                        msg=f"Subject: Birthday day Wishes\n\n{new_name}"
-                    )
+    client = Client(account_sid, auth_token)
+    message = client.messages.create(body = "Rain Rain!. Pls dont forget to take Umbrella",
+                                     from_="+18443525310",
+                                     to="+17797745994")
+    print(message.status)
 
 
 
+
+# print(data["list"][0]["weather"][0]["id"])
+# print(data["list"][1]["weather"][0]["id"])
+# print(data["list"][2]["weather"][0]["id"])
+# print(data["list"][3]["weather"][0]["id"])
